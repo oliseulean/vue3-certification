@@ -4,7 +4,6 @@
 import { items } from './movies.json';
 // eslint-disable-next-line no-unused-vars
 import { StarIcon } from '@heroicons/vue/24/solid';
-console.log('test');
 </script>
 
 <template>
