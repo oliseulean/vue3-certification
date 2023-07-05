@@ -3,8 +3,11 @@
 import { items } from './movies.json';
 import { StarIcon } from '@heroicons/vue/24/solid';
 
+import { ref } from 'vue';
+
 /* handle formatted rating */
-const formattedRating = (rating) => `Rating: (${rating}/5)`;
+const ratingMax = ref(5);
+const formattedRating = (rating) => `Rating: (${rating}/${ratingMax.value})`;
 </script>
 
 <template>
