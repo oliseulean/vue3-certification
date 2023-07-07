@@ -3,50 +3,70 @@
 import { items } from './movies.json';
 import { StarIcon } from '@heroicons/vue/24/solid';
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
-/* handle formatted rating */
+const movies = ref(items);
+
 const ratingMax = ref(5);
 const formattedRating = (rating) => `Rating: (${rating}/${ratingMax.value})`;
+
+const updateRating = (movieIndex, rating) => {
+  const movie = movies.value[movieIndex];
+  movie.rating = rating;
+};
+
+const isDisabled = (rating, movieRating) => rating === movieRating;
+
+const getRatingButtonClasses = (rating, movie) => {
+  return [
+    'app__card__rating__star',
+    computed(() => (rating <= movie.rating ? 'text-yellow-500' : 'text-gray-300')).value,
+    computed(() => (rating === movie.rating ? 'cursor-not-allowed' : '')).value
+  ];
+};
 </script>
 
 <template>
   <div class="app__container">
     <div class="app__cards">
       <div
-        v-for="item in items"
-        :key="item.id"
         class="app__card"
+        v-for="(movie, itemIndex) in movies"
+        :key="movie.id"
       >
         <img
-          :src="item.image"
+          :src="movie.image"
           alt="movie poster"
           class="app__card__image"
         >
         <div class="app__card__content">
           <h2 class="app__card__title">
-            {{ item.name }}
+            {{ movie.name }}
           </h2>
           <div class="app__card__genre">
             <button
-              v-for="genre in item.genres"
+              v-for="genre in movie.genres"
               :key="genre"
             >
               {{ genre }}
             </button>
           </div>
           <h2 class="app__card__description">
-            {{ item.description }}
+            {{ movie.description }}
           </h2>
           <div class="app__card__rating">
             <p class="app__card__rating__number">
-              {{ formattedRating(item.rating) }}
+              {{ formattedRating(movie.rating) }}
             </p>
-            <StarIcon
-              v-for="rating in item.rating"
+            <button
+              v-for="rating in ratingMax"
               :key="rating"
-              class="app__card__rating__star"
-            />
+              :class="getRatingButtonClasses(rating, movie)"
+              :disabled="isDisabled(rating, movie)"
+              @click="updateRating(itemIndex, rating)"
+            >
+              <StarIcon />
+            </button>
           </div>
         </div>
       </div>
