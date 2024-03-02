@@ -23,6 +23,25 @@
     @apply object-cover object-center h-[600px];
 }
 
+.movie-item-star-wrapper {
+    @apply absolute top-0 right-0;
+}
+
+.movie-item-star-content-wrapper {
+    @apply absolute inset-0 flex items-center justify-center text-center;
+}
+
+.movie-item-star-rating-icon {
+    @apply h-16 w-16;
+}
+
+.movie-item-star-content-rating-rated {
+    @apply text-xl text-yellow-800;
+}
+.movie-item-star-content-rating-not-rated {
+    @apply text-xl text-gray-400;
+}
+
 .movie-item-content-wrapper {
     @apply h-56 p-4 flex flex-col items-start justify-start w-full;
 }
