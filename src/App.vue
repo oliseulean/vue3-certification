@@ -183,6 +183,19 @@ const addMovie = () => {
             class="movie-item-image"
             alt="Movie Image"
           >
+          <div class="movie-item-rating">
+            <div class="movie-item-star-icon-container">
+              <template v-if="movie.rating > 0">
+                <StarIcon class="movie-item-star-icon-image-gold" />
+              </template>
+              <template v-else>
+                <StarIcon
+                  class="movie-item-star-icon-image-gray"
+                />
+              </template>
+              <span class="movie-item-rating-text">-</span>
+            </div>
+          </div>
         </div>
         <div class="movie-item-content-wrapper">
           <div class="movie-item-title-wrapper">
@@ -205,7 +218,7 @@ const addMovie = () => {
             </p>
           </div>
           <div class="movie-item-rating-wrapper">
-            <span class="movie-item-rating-text">
+            <span class="movie-item-rating-text-rating">
               Rating: {{ movie.rating || '-' }}/{{ state.maximumRating }}
             </span>
             <div class="movie-item-star-icon-wrapper">
@@ -268,5 +281,37 @@ const addMovie = () => {
   .movie-item .movie-item-image {
     width: 100%;
   }
+}
+
+.movie-item-rating {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.movie-item-star-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+.movie-item-star-icon-image-gold {
+  width: 3rem !important;
+  height: 3rem !important;
+  fill: gold;
+}
+
+.movie-item-star-icon-image-gray {
+  width: 3rem !important;
+  height: 3rem !important;
+  fill: gray;
+}
+
+.movie-item-rating-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
+  font-size: 0.8rem;
 }
 </style>
