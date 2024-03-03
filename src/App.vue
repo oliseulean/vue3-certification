@@ -23,7 +23,7 @@ const starIconClass = (star, movie) => {
 };
 
 const disableStar = (star, movie) => {
-  return star > (movie.rating || 0);
+  return star === movie.rating;
 };
 
 const toggleVisibility = () => {
