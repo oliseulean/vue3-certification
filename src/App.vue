@@ -1,6 +1,6 @@
 <script setup>
 /* Imports */
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { StarIcon } from '@heroicons/vue/24/solid';
 import { items } from './movies.json';
 
@@ -8,6 +8,7 @@ import { items } from './movies.json';
 const state = ref({
   movies: items,
   maximumRating: 5,
+  isFormVisible: false,
 })
 
 const updateRating = (movie, rating) => {
@@ -24,11 +25,153 @@ const starIconClass = (star, movie) => {
 const disableStar = (star, movie) => {
   return star > (movie.rating || 0);
 };
+
+const toggleVisibility = () => {
+  if (state.value.isFormVisible) {
+    clearForm();
+  }
+  return state.value.isFormVisible = !state.value.isFormVisible;
+};
+
+const computedWrapperClass = computed(() => {
+  return {
+    'add-movie-wrapper': true,
+    'add-movie-wrapper--visible': state.value.isFormVisible,
+  };
+});
+
+const computedMovieListClass = computed(() => {
+  return {
+    'movie-list': true,
+    'movie-list--is-form-visible': state.value.isFormVisible,
+  };
+});
+
+const clearForm = () => {
+  document.querySelector('.add-movie-name').value = '';
+  document.querySelector('.add-movie-description').value = '';
+  document.querySelector('.add-movie-image').value = '';
+  document.querySelector('.add-movie-genres').selectedIndex = -1;
+  document.querySelector('#theaters').checked = false;
+};
+
+const addMovie = () => {
+  const name = document.querySelector('.add-movie-name').value.trim();
+  const description = document.querySelector('.add-movie-description').value.trim();
+  const image = document.querySelector('.add-movie-image').value.trim();
+  const genres = Array.from(document.querySelector('.add-movie-genres').selectedOptions).map(option => option.value);
+  const isInTheaters = document.querySelector('#theaters').checked;
+
+  // Validate if name and at least one genre are provided
+  if (!name || genres.length === 0) {
+    alert('Please provide a name and select at least one genre.');
+    return;
+  }
+
+  // Create a new movie object
+  const newMovie = {
+    name,
+    description,
+    image,
+    genres,
+    isInTheaters,
+    rating: 0,
+  };
+
+  // Add the new movie to the state
+  state.value.movies.push(newMovie);
+
+  // Reset form fields
+  clearForm();
+
+  // Hide the form
+  toggleVisibility();
+};
 </script>
 
 <template>
   <div class="app">
-    <div class="movie-list">
+    <div :class="computedWrapperClass">
+      <button
+        v-if="!state.isFormVisible"
+        class="add-movie-button"
+        @click="toggleVisibility()"
+      >
+        Add Movie
+      </button>
+      <form
+        class="add-movie-form"
+        v-if="state.isFormVisible"
+      >
+        <label for="name">Name: </label>
+        <input
+          type="text"
+          class="add-movie-name"
+          name="name"
+          required="true"
+        >
+        <label for="description">Description: </label>
+        <textarea
+          class="add-movie-description"
+          name="description"
+        />
+        <label for="image">Image: </label>
+        <input
+          type="text"
+          class="add-movie-image"
+          name="image"
+        >
+
+        <label for="genres">Genres: </label>
+        <select
+          class="add-movie-genres"
+          name="genres"
+          multiple="true"
+          required="true"
+        >
+          <option value="Drama">
+            Drama
+          </option>
+          <option value="Crime">
+            Crime
+          </option>
+          <option value="Action">
+            Action
+          </option>
+          <option value="Comedy">
+            Comedy
+          </option>
+        </select>
+
+        <div class="add-movie-checkbox-wrapper">
+          <input
+            type="checkbox"
+            id="theaters"
+            name="theaters"
+            value="theaters"
+          >
+          <label for="theaters">In theaters</label>
+        </div>
+
+        <div class="add-movie-buttons-wrapper">
+          <button
+            class="add-movie-cancel"
+            @click="toggleVisibility()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="add-movie-submit"
+            @click="addMovie()"
+          >
+            Create
+          </button>
+        </div>
+      </form>
+    </div>
+    <div :class="computedMovieListClass">
       <div
         v-for="(movie, index) in state.movies"
         :key="`movie-${index}`"
@@ -83,3 +226,47 @@ const disableStar = (star, movie) => {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.add-movie-wrapper {
+  position: absolute;
+  top: 4rem;
+  right: 14rem;
+  background-color: blue;
+  z-index: 2;
+
+  &--visible {
+    background-color: gray;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.add-movie-form {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+}
+
+.add-movie-buttons-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding-top: 7rem;
+
+  .movie-item {
+    width: calc(33.33% - 50px);
+    margin-bottom: 1rem;
+  }
+
+  .movie-item .movie-item-image {
+    width: 100%;
+  }
+}
+</style>

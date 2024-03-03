@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 
-.app {
-    @apply max-w-full flex items-center justify-center h-screen mx-auto;
-}
-
 .movie-list {
     @apply flex items-center justify-center space-x-4;
 }
