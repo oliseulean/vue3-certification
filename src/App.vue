@@ -193,7 +193,7 @@ const addMovie = () => {
                   class="movie-item-star-icon-image-gray"
                 />
               </template>
-              <span class="movie-item-rating-text">-</span>
+              <span class="movie-item-rating-text">{{ movie.rating ?? '-' }}</span>
             </div>
           </div>
         </div>
