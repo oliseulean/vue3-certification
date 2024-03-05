@@ -314,4 +314,9 @@ const addMovie = () => {
   color: black;
   font-size: 0.8rem;
 }
+
+.movie-item-rating-text-rating {
+  font-size: 0.875rem;
+  margin-right: 1rem;
+}
 </style>
