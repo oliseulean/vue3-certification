@@ -10,6 +10,7 @@ import { items } from './movies.json';
 
 /* Components */
 import UpdateButtonsWrapper from './UpdateButtonsWrapper.vue';
+import MovieMenu from './MovieMenu.vue';
 
 /* Global Component State */
 const state = ref({
@@ -175,14 +176,12 @@ const computedEditVerbiage = computed(() => state.value.isEditing ? 'Update' : '
 
 <template>
   <div class="app">
+    <MovieMenu
+      :movies="state.movies"
+      :is-form-visible="state.isFormVisible"
+      @toggle-visibility="toggleVisibility"
+    />
     <div :class="computedWrapperClass">
-      <button
-        v-if="!state.isFormVisible"
-        class="add-movie-button"
-        @click="toggleVisibility()"
-      >
-        Add Movie
-      </button>
       <form
         class="add-movie-form"
         v-if="state.isFormVisible"
@@ -364,7 +363,6 @@ const computedEditVerbiage = computed(() => state.value.isEditing ? 'Update' : '
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  padding-top: 7rem;
 
   .movie-item {
     width: calc(33.33% - 50px);

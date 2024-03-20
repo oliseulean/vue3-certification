@@ -8,16 +8,7 @@ tags: vue
 # Polish your App
 
 # Challenge Description
-In this challenge, let's polish up the Movie Rating App with a few more features including:
-- The ability to delete movies
-- A display of the average rating.
-- A display of the total number of movies
-- and the ability to edit movies
-
 ## Requirements
-- Calculate and display the average rating with a computed prop
-- Add a button to reset all movie ratings to zero.
-- Calculate and display the total number of movies in the list
 
 ## Other Considerations
 

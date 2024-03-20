@@ -16,6 +16,7 @@ module.exports = {
     'vue',
   ],
   rules: {
-    quotes: [2, 'single', { 'avoidEscape': true }]
+    quotes: [2, 'single', { 'avoidEscape': true }],
+    'vue/multi-word-component-names': 0,
   }
 }
