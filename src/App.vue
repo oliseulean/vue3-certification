@@ -172,6 +172,15 @@ const removeMovie = (movie) => {
 const appUpdateMovie = (movie) => state.value.isEditing ? updateMovie(movie) : addMovie(movie);
 
 const computedEditVerbiage = computed(() => state.value.isEditing ? 'Update' : 'Create');
+
+const setMovieRating = (rating) => movieState.value.movieRating = rating;
+
+const addUpdateMovieStarIconClass = computed(() => {
+  return (star) => ({
+    'text-yellow-500': star <= movieState.value.movieRating,
+    'text-gray-500': star > movieState.value.movieRating,
+  });
+});
 </script>
 
 <template>
@@ -239,6 +248,18 @@ const computedEditVerbiage = computed(() => state.value.isEditing ? 'Update' : '
             v-model="movieState.movieInTheaters"
           >
           <label for="theaters">In theaters</label>
+        </div>
+
+        <div class="add-movie-rating-stars">
+          <button
+            v-for="star in state.maximumRating"
+            :key="star"
+            class="add-movie-rating-star"
+            @click.prevent="setMovieRating(star)"
+            :class="addUpdateMovieStarIconClass(star)"
+          >
+            <StarIcon class="h-6 w-6" />
+          </button>
         </div>
 
         <div class="add-movie-buttons-wrapper">
@@ -409,5 +430,9 @@ const computedEditVerbiage = computed(() => state.value.isEditing ? 'Update' : '
 .movie-item-rating-text-rating {
   font-size: 0.875rem;
   margin-right: 1rem;
+}
+
+.add-movie-rating-stars {
+  padding: 1rem 0;
 }
 </style>
