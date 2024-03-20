@@ -1,6 +1,10 @@
 <script setup>
 /* Imports */
-import { ref, computed } from 'vue';
+import {
+  ref,
+  computed,
+  onMounted,
+} from 'vue';
 import { StarIcon } from '@heroicons/vue/24/solid';
 import { items } from './movies.json';
 
@@ -86,6 +90,18 @@ const addMovie = () => {
 
   // Hide the form
   toggleVisibility();
+};
+
+/* Lifecycle hooks */
+onMounted(() => {
+  document.addEventListener('keydown', handleEscapeKey);
+});
+
+/* Event handlers -> Keyboard form visibility */
+const handleEscapeKey = (event) => {
+  if (state.value.isFormVisible && (event.key === 'Escape' || event.key === 'Esc')) {
+    state.value.isFormVisible = false;
+  }
 };
 </script>
 
