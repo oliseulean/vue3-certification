@@ -15,16 +15,9 @@ In this challenge, let's polish up the Movie Rating App with a few more features
 - and the ability to edit movies
 
 ## Requirements
-- Add a button on each movie allowing users to remove it from the list. 
 - Calculate and display the average rating with a computed prop
 - Add a button to reset all movie ratings to zero.
 - Calculate and display the total number of movies in the list
-- Add the ability to edit each movie
-  - Add an edit button to each movie 
-  - Re-use the "Add Movie" form to edit movies
-  - Pre-fill the form with the data of the movie being edited
-  - On form submit, replace the old movie values with the new
-  - Ensure that the ratings of that movie are not lost when you edit it
 
 ## Other Considerations
 

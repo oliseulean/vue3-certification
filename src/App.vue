@@ -8,12 +8,26 @@ import {
 import { StarIcon } from '@heroicons/vue/24/solid';
 import { items } from './movies.json';
 
-/* State */
+/* Components */
+import UpdateButtonsWrapper from './UpdateButtonsWrapper.vue';
+
+/* Global Component State */
 const state = ref({
   movies: items,
   maximumRating: 5,
   isFormVisible: false,
-})
+  isEditing: false,
+  editingMovieId: null,
+});
+
+/* Movie State */
+const movieState = ref({
+  movieName: '',
+  movieDescription: '',
+  movieImage: '',
+  movieGenres: [],
+  movieInTheaters: false,
+});
 
 const updateRating = (movie, rating) => {
   movie.rating = rating;
@@ -52,44 +66,70 @@ const computedMovieListClass = computed(() => {
 });
 
 const clearForm = () => {
-  document.querySelector('.add-movie-name').value = '';
-  document.querySelector('.add-movie-description').value = '';
-  document.querySelector('.add-movie-image').value = '';
-  document.querySelector('.add-movie-genres').selectedIndex = -1;
-  document.querySelector('#theaters').checked = false;
+  Object.assign(movieState.value, {
+    movieName: '',
+    movieDescription: '',
+    movieImage: '',
+    movieGenres: [],
+    movieInTheaters: false,
+  });
+};
+
+const clearFormAndToggleVisibility = () => {
+  clearForm();
+  toggleVisibility();
 };
 
 const addMovie = () => {
-  const name = document.querySelector('.add-movie-name').value.trim();
-  const description = document.querySelector('.add-movie-description').value.trim();
-  const image = document.querySelector('.add-movie-image').value.trim();
-  const genres = Array.from(document.querySelector('.add-movie-genres').selectedOptions).map(option => option.value);
-  const isInTheaters = document.querySelector('#theaters').checked;
+  const movieData = prepareMovieData();
+  if (movieData) {
+    // Add the new movie to the movies array
+    state.value.movies.push(movieData);
+    // Clear the form and toggle the visibility
+    clearFormAndToggleVisibility();
+  }
+};
 
-  // Validate if name and at least one genre are provided
-  if (!name || genres.length === 0) {
+const updateMovie = () => {
+  const movieData = prepareMovieData();
+  if (movieData) {
+    // Find the index of the movie to be edited
+    const currIndex = state.value.movies.findIndex((movie) => movie.id === state.value.editingMovieId);
+
+    // Check if the movie is being edited and the index is found
+    if (state.value.isEditing && currIndex !== -1) {
+      const editedMovie = state.value.movies[currIndex];
+      Object.assign(editedMovie, movieData);
+      clearFormAndToggleVisibility();
+    }
+  }
+};
+
+const prepareMovieData = () => {
+  const {
+    movieName,
+    movieDescription,
+    movieImage,
+    movieGenres,
+    movieInTheaters,
+    movieRating,
+  } = movieState.value;
+
+  const name = movieName.trim();
+
+  if (!name || movieGenres.length === 0) {
     alert('Please provide a name and select at least one genre.');
-    return;
+    return null;
   }
 
-  // Create a new movie object
-  const newMovie = {
+  return {
     name,
-    description,
-    image,
-    genres,
-    isInTheaters,
-    rating: 0,
+    description: movieDescription,
+    image: movieImage,
+    genres: movieGenres,
+    isInTheaters: movieInTheaters,
+    rating: movieRating,
   };
-
-  // Add the new movie to the state
-  state.value.movies.push(newMovie);
-
-  // Reset form fields
-  clearForm();
-
-  // Hide the form
-  toggleVisibility();
 };
 
 /* Lifecycle hooks */
@@ -101,8 +141,36 @@ onMounted(() => {
 const handleEscapeKey = (event) => {
   if (state.value.isFormVisible && (event.key === 'Escape' || event.key === 'Esc')) {
     state.value.isFormVisible = false;
+    clearForm();
   }
 };
+
+const editMovie = (movie) => {
+  state.value.isEditing = true;
+  state.value.editingMovieId = movie.id;
+
+  Object.assign(movieState.value, {
+    movieName: movie.name,
+    movieDescription: movie.description,
+    movieImage: movie.image,
+    movieGenres: movie.genres,
+    movieInTheaters: movie.isInTheaters,
+  });
+
+  // Preserve the current rating of the movie being edited
+  movieState.value.movieRating = movie.rating;
+
+  toggleVisibility();
+};
+
+const removeMovie = (movie) => {
+  const currIndex = state.value.movies.indexOf(movie);
+  state.value.movies.splice(currIndex, 1);
+};
+
+const appUpdateMovie = (movie) => state.value.isEditing ? updateMovie(movie) : addMovie(movie);
+
+const computedEditVerbiage = computed(() => state.value.isEditing ? 'Update' : 'Create');
 </script>
 
 <template>
@@ -125,17 +193,20 @@ const handleEscapeKey = (event) => {
           class="add-movie-name"
           name="name"
           required="true"
+          v-model="movieState.movieName"
         >
         <label for="description">Description: </label>
         <textarea
           class="add-movie-description"
           name="description"
+          v-model="movieState.movieDescription"
         />
         <label for="image">Image: </label>
         <input
           type="text"
           class="add-movie-image"
           name="image"
+          v-model="movieState.movieImage"
         >
 
         <label for="genres">Genres: </label>
@@ -144,6 +215,7 @@ const handleEscapeKey = (event) => {
           name="genres"
           multiple="true"
           required="true"
+          v-model="movieState.movieGenres"
         >
           <option value="Drama">
             Drama
@@ -165,6 +237,7 @@ const handleEscapeKey = (event) => {
             id="theaters"
             name="theaters"
             value="theaters"
+            v-model="movieState.movieInTheaters"
           >
           <label for="theaters">In theaters</label>
         </div>
@@ -180,9 +253,9 @@ const handleEscapeKey = (event) => {
           <button
             type="submit"
             class="add-movie-submit"
-            @click="addMovie()"
+            @click="appUpdateMovie()"
           >
-            Create
+            {{ computedEditVerbiage }}
           </button>
         </div>
       </form>
@@ -248,6 +321,10 @@ const handleEscapeKey = (event) => {
               >
                 <StarIcon class="movie-item-star-icon" />
               </button>
+              <UpdateButtonsWrapper
+                @edit-movie="editMovie(movie)"
+                @remove-movie="removeMovie(movie)"
+              />
             </div>
           </div>
         </div>
